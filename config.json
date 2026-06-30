@@ -1,0 +1,7 @@
+{
+  "greenhouse": ["gitlab", "discord", "figma"],
+  "lever": ["netflix", "upstart"],
+  "arbeitnow": ["python", "remote"],
+  "skills": ["JavaScript", "Node.js", "React", "Python", "TypeScript"],
+  "threshold": 0.3
+}

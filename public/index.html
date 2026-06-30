@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Radar</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f4f5f7; color: #172b4d; min-height: 100vh; }
+
+    /* ── sticky header + filter bar ── */
+    header { background: #0c1e3c; color: #fff; padding: .75rem 1.5rem; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+    header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; }
+    header .tagline { font-size: .75rem; color: rgba(255,255,255,.5); margin-left: .5rem; font-weight: 400; }
+
+    .toolbar { position: sticky; top: 44px; z-index: 150; display: flex; gap: .75rem; align-items: flex-end; flex-wrap: wrap; padding: .75rem 1.5rem; background: #fff; border-bottom: 1px solid #dfe1e6; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .toolbar label { font-size: .7rem; font-weight: 600; color: #6b778c; text-transform: uppercase; letter-spacing: .04em; display: flex; flex-direction: column; gap: .2rem; }
+    .toolbar input[type=range] { width: 110px; height: 4px; accent-color: #0052cc; cursor: pointer; }
+    .toolbar select, .toolbar input[type=text] { padding: .35rem .55rem; border: 1px solid #dfe1e6; border-radius: 4px; font-size: .8rem; background: #fafbfc; transition: border-color .15s; }
+    .toolbar select:focus, .toolbar input[type=text]:focus { outline: none; border-color: #0052cc; box-shadow: 0 0 0 2px rgba(0,82,204,.15); }
+    .toolbar input[type=text] { width: 200px; }
+
+    /* ── buttons ── */
+    .btn { padding: .4rem .85rem; border: none; border-radius: 4px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .15s, transform .1s; line-height: 1.4; }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: #0052cc; color: #fff; }
+    .btn-primary:hover { background: #0043b3; }
+    .btn-primary:disabled { background: #a5adba; cursor: not-allowed; }
+    .btn-success { background: #00875a; color: #fff; }
+    .btn-success:hover { background: #006644; }
+    .btn-success:disabled { background: #a5adba; cursor: default; }
+    .btn-apply { background: #0052cc; color: #fff; text-decoration: none; display: inline-flex; align-items: center; padding: .35rem .75rem; border-radius: 4px; font-size: .78rem; font-weight: 600; transition: background .15s; }
+    .btn-apply:hover { background: #0043b3; }
+
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: .35rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status { font-size: .78rem; color: #6b778c; align-self: center; margin-left: auto; white-space: nowrap; }
+    .status:empty { display: none; }
+
+    /* ── card grid ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; padding: 1.25rem 1.5rem; max-width: 1400px; margin: 0 auto; }
+
+    .card { background: #fff; border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid #dfe1e6; transition: box-shadow .2s, opacity .3s, border-color .2s; display: flex; flex-direction: column; gap: .5rem; }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); border-color: #c1c7d0; }
+    .card.applied { opacity: .4; }
+
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; }
+    .card-title { font-size: .92rem; font-weight: 600; line-height: 1.35; color: #172b4d; }
+    .card-company { font-size: .82rem; color: #6b778c; font-weight: 500; }
+    .card-meta { display: flex; gap: .6rem; font-size: .75rem; color: #97a0af; flex-wrap: wrap; align-items: center; }
+    .card-meta .sep { width: 3px; height: 3px; border-radius: 50%; background: #dfe1e6; flex-shrink: 0; }
+
+    /* ── score badges ── */
+    .badge { display: inline-flex; align-items: center; padding: .12rem .5rem; border-radius: 3px; font-size: .72rem; font-weight: 700; letter-spacing: .02em; white-space: nowrap; flex-shrink: 0; }
+    .badge-high { background: #e3fcef; color: #006644; }
+    .badge-mid  { background: #fffae6; color: #ff8b00; }
+    .badge-low  { background: #f4f5f7; color: #6b778c; }
+
+    .card-actions { display: flex; gap: .4rem; margin-top: auto; padding-top: .6rem; border-top: 1px solid #f0f1f4; }
+
+    .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #97a0af; font-size: .95rem; }
+
+    /* ── responsive ── */
+    @media (max-width: 768px) {
+      header { padding: .6rem 1rem; }
+      header h1 { font-size: 1rem; }
+      header .tagline { display: none; }
+
+      .toolbar { top: 40px; padding: .6rem 1rem; gap: .5rem; }
+      .toolbar input[type=text] { width: 100%; }
+      .toolbar label { flex: 1 1 120px; min-width: 0; }
+      .toolbar input[type=range] { width: 100%; }
+
+      .cards { grid-template-columns: 1fr; padding: 1rem; gap: .75rem; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Job Radar<span class="tagline">matching jobs, scored for you</span></h1>
+  </header>
+
+  <div class="toolbar">
+    <label>
+      Min Score: <span id="scoreVal">0.00</span>
+      <input type="range" id="scoreSlider" min="0" max="1" step="0.05" value="0">
+    </label>
+    <label>
+      Source
+      <select id="sourceSelect">
+        <option value="">All</option>
+      </select>
+    </label>
+    <label>
+      Search
+      <input type="text" id="searchInput" placeholder="title, company...">
+    </label>
+    <button class="btn btn-primary" id="refreshBtn">Refresh Jobs</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const cards = $('#cards');
+    const scoreSlider = $('#scoreSlider');
+    const scoreVal = $('#scoreVal');
+    const sourceSelect = $('#sourceSelect');
+    const searchInput = $('#searchInput');
+    const refreshBtn = $('#refreshBtn');
+    const status = $('#status');
+
+    let debounceTimer;
+
+    function badgeClass(score) {
+      if (score >= 0.6) return 'badge-high';
+      if (score >= 0.3) return 'badge-mid';
+      return 'badge-low';
+    }
+
+    function renderCard(job) {
+      const applied = !!job.appliedAt;
+      return `
+        <div class="card${applied ? ' applied' : ''}" data-id="${job.id}">
+          <div class="card-header">
+            <span class="card-title">${esc(job.title)}</span>
+            <span class="badge ${badgeClass(job.score)}">${job.score.toFixed(2)}</span>
+          </div>
+          <div class="card-company">${esc(job.company)}</div>
+          <div class="card-meta">
+            <span>${esc(job.location || 'Remote')}</span>
+            <span>${esc(job.source)}</span>
+          </div>
+          <div class="card-actions">
+            <a class="btn-apply" href="${esc(job.url)}" target="_blank" rel="noopener">Apply</a>
+            ${applied
+              ? '<button class="btn btn-success" disabled>Applied</button>'
+              : `<button class="btn btn-success" onclick="markApplied('${job.id}')">Mark Applied</button>`
+            }
+          </div>
+        </div>`;
+    }
+
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str || '';
+      return d.innerHTML;
+    }
+
+    async function loadJobs() {
+      const params = new URLSearchParams();
+      const minScore = parseFloat(scoreSlider.value);
+      if (minScore > 0) params.set('minScore', minScore);
+      if (sourceSelect.value) params.set('source', sourceSelect.value);
+      if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
+
+      const res = await fetch('/api/jobs?' + params);
+      const jobs = await res.json();
+
+      cards.innerHTML = jobs.length
+        ? jobs.map(renderCard).join('')
+        : '<div class="empty">No jobs match your filters.</div>';
+
+      populateSources(jobs);
+    }
+
+    function populateSources(jobs) {
+      const current = sourceSelect.value;
+      const sources = [...new Set(jobs.map(j => j.source))].sort();
+      const existing = new Set([...sourceSelect.options].map(o => o.value));
+      for (const s of sources) {
+        if (!existing.has(s)) {
+          const opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s;
+          sourceSelect.appendChild(opt);
+        }
+      }
+      sourceSelect.value = current;
+    }
+
+    window.markApplied = async function(id) {
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      const btn = card.querySelector('.btn-success');
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      const res = await fetch(`/api/jobs/${id}/applied`, { method: 'POST' });
+      if (res.ok) {
+        card.classList.add('applied');
+        btn.textContent = 'Applied';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Mark Applied';
+      }
+    };
+
+    refreshBtn.addEventListener('click', async () => {
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = '<span class="spinner"></span>Refreshing...';
+      status.textContent = 'Fetching new jobs...';
+
+      try {
+        const res = await fetch('/api/refresh', { method: 'POST' });
+        const data = await res.json();
+        status.textContent = `Done — ${data.added} new job${data.added !== 1 ? 's' : ''} found.`;
+        await loadJobs();
+      } catch (err) {
+        status.textContent = 'Refresh failed: ' + err.message;
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = 'Refresh Jobs';
+      }
+    });
+
+    scoreSlider.addEventListener('input', () => {
+      scoreVal.textContent = parseFloat(scoreSlider.value).toFixed(2);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(loadJobs, 300);
+    });
+
+    sourceSelect.addEventListener('change', loadJobs);
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(loadJobs, 300);
+    });
+
+    loadJobs();
+  </script>
+</body>
+</html>

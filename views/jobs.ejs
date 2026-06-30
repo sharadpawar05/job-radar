@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Radar</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; background: #f9f9f9; }
+    h1 { margin-bottom: 1rem; }
+    table { border-collapse: collapse; width: 100%; background: #fff; }
+    th, td { border: 1px solid #ddd; padding: 0.6rem 0.8rem; text-align: left; }
+    th { background: #333; color: #fff; }
+    tr:hover { background: #f1f1f1; }
+    .score { font-weight: bold; }
+    a { color: #0066cc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>Jobs — Last 7 Days</h1>
+  <p><%= jobs.length %> result<%= jobs.length !== 1 ? 's' : '' %></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Score</th>
+        <th>Company</th>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Source</th>
+        <th>Posted</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% jobs.forEach(job => { %>
+        <tr>
+          <td class="score"><%= job.score.toFixed(2) %></td>
+          <td><%= job.company %></td>
+          <td><a href="<%= job.url %>" target="_blank"><%= job.title %></a></td>
+          <td><%= job.location %></td>
+          <td><%= job.source %></td>
+          <td><%= job.postedDate %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

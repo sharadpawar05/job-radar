@@ -280,6 +280,20 @@
 
     function resetPage() { currentPage = 1; }
 
+    async function loadSources() {
+      const res = await fetch('/api/sources');
+      const sources = await res.json();
+      const current = sourceSelect.value;
+      sourceSelect.innerHTML = '<option value="">All</option>';
+      for (const s of sources) {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sourceSelect.appendChild(opt);
+      }
+      sourceSelect.value = current;
+    }
+
     window.markApplied = async function(id) {
       const card = document.querySelector(`.card[data-id="${id}"]`);
       const btn = card.querySelector('.btn-success');
@@ -323,6 +337,7 @@
 
     freshSelect.addEventListener('change', () => { resetPage(); loadJobs(); });
 
+    loadSources();
     loadJobs();
   </script>
 </body>

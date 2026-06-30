@@ -83,6 +83,11 @@ app.get('/api/jobs', (req, res) => {
   });
 });
 
+app.get('/api/sources', (req, res) => {
+  const rows = db.prepare('SELECT DISTINCT source FROM jobs ORDER BY source').all();
+  res.json(rows.map(r => r.source));
+});
+
 app.post('/api/jobs/:id/applied', (req, res) => {
   const { id } = req.params;
   const result = db.prepare('UPDATE jobs SET appliedAt = datetime(\'now\') WHERE id = ?').run(id);

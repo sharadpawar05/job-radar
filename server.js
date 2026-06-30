@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/jobs', (req, res) => {
-  const { minScore, source, search } = req.query;
+  const { minScore, source, search, skills } = req.query;
   let sql = 'SELECT * FROM jobs WHERE 1=1';
   const params = [];
 
@@ -36,6 +36,11 @@ app.get('/api/jobs', (req, res) => {
     sql += ' AND (title LIKE ? OR company LIKE ? OR description LIKE ?)';
     const term = `%${search}%`;
     params.push(term, term, term);
+  }
+
+  if (skills) {
+    sql += ' AND skillsTags LIKE ?';
+    params.push(`%${skills}%`);
   }
 
   sql += ' ORDER BY score DESC';

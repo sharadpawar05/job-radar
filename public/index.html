@@ -59,6 +59,9 @@
 
     .card-actions { display: flex; gap: .4rem; margin-top: auto; padding-top: .6rem; border-top: 1px solid #f0f1f4; }
 
+    .card-skills { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .skill-tag { display: inline-block; padding: .1rem .45rem; background: #e9ecef; color: #495057; border-radius: 3px; font-size: .68rem; font-weight: 500; }
+
     .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #97a0af; font-size: .95rem; }
 
     /* ── responsive ── */
@@ -100,6 +103,10 @@
       Search
       <input type="text" id="searchInput" placeholder="title, company...">
     </label>
+    <label>
+      Skills
+      <input type="text" id="skillsInput" placeholder="e.g. React, Python">
+    </label>
     <button class="btn btn-primary" id="refreshBtn">Refresh Jobs</button>
     <span class="status" id="status"></span>
   </div>
@@ -113,6 +120,7 @@
     const scoreVal = $('#scoreVal');
     const sourceSelect = $('#sourceSelect');
     const searchInput = $('#searchInput');
+    const skillsInput = $('#skillsInput');
     const refreshBtn = $('#refreshBtn');
     const status = $('#status');
 
@@ -126,6 +134,11 @@
 
     function renderCard(job) {
       const applied = !!job.appliedAt;
+      let skills = [];
+      try { skills = JSON.parse(job.skillsTags || '[]'); } catch {}
+      const skillTags = skills.length
+        ? `<div class="card-skills">${skills.map(s => `<span class="skill-tag">${esc(s)}</span>`).join('')}</div>`
+        : '';
       return `
         <div class="card${applied ? ' applied' : ''}" data-id="${job.id}">
           <div class="card-header">
@@ -137,6 +150,7 @@
             <span>${esc(job.location || 'Remote')}</span>
             <span>${esc(job.source)}</span>
           </div>
+          ${skillTags}
           <div class="card-actions">
             <a class="btn-apply" href="${esc(job.url)}" target="_blank" rel="noopener">Apply</a>
             ${applied
@@ -159,6 +173,7 @@
       if (minScore > 0) params.set('minScore', minScore);
       if (sourceSelect.value) params.set('source', sourceSelect.value);
       if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
+      if (skillsInput.value.trim()) params.set('skills', skillsInput.value.trim());
 
       const res = await fetch('/api/jobs?' + params);
       const jobs = await res.json();
@@ -228,6 +243,11 @@
     sourceSelect.addEventListener('change', loadJobs);
 
     searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(loadJobs, 300);
+    });
+
+    skillsInput.addEventListener('input', () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(loadJobs, 300);
     });

@@ -8,93 +8,98 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f4f5f7; color: #172b4d; min-height: 100vh; }
 
-    header { background: #0c1e3c; color: #fff; padding: .75rem 1.5rem; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+    header { background: #0c1e3c; color: #fff; padding: .7rem 1.5rem; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
     header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; }
     header .tagline { font-size: .75rem; color: rgba(255,255,255,.5); margin-left: .5rem; font-weight: 400; }
 
-    .toolbar { position: sticky; top: 44px; z-index: 150; display: flex; gap: .75rem; align-items: flex-end; flex-wrap: wrap; padding: .75rem 1.5rem; background: #fff; border-bottom: 1px solid #dfe1e6; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
-    .toolbar label { font-size: .7rem; font-weight: 600; color: #6b778c; text-transform: uppercase; letter-spacing: .04em; display: flex; flex-direction: column; gap: .2rem; }
-    .toolbar input[type=range] { width: 110px; height: 4px; accent-color: #0052cc; cursor: pointer; }
-    .toolbar select, .toolbar input[type=text] { padding: .35rem .55rem; border: 1px solid #dfe1e6; border-radius: 4px; font-size: .8rem; background: #fafbfc; transition: border-color .15s; }
-    .toolbar select:focus, .toolbar input[type=text]:focus { outline: none; border-color: #0052cc; box-shadow: 0 0 0 2px rgba(0,82,204,.15); }
-    .toolbar input[type=text] { width: 200px; }
+    /* ── filter bar ── */
+    .filter-bar { position: sticky; top: 42px; z-index: 150; background: #fff; border-bottom: 1px solid #dfe1e6; box-shadow: 0 1px 3px rgba(0,0,0,.06); padding: .6rem 1.5rem; }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1fr auto; gap: .6rem; align-items: end; max-width: 1400px; margin: 0 auto; }
+    .filter-group { display: flex; flex-direction: column; gap: .2rem; }
+    .filter-group label { font-size: .65rem; font-weight: 600; color: #6b778c; text-transform: uppercase; letter-spacing: .05em; }
+    .filter-group input, .filter-group select { padding: .4rem .6rem; border: 1px solid #dfe1e6; border-radius: 4px; font-size: .8rem; background: #fafbfc; transition: border-color .15s, box-shadow .15s; width: 100%; }
+    .filter-group input:focus, .filter-group select:focus { outline: none; border-color: #0052cc; box-shadow: 0 0 0 2px rgba(0,82,204,.12); }
+    .filter-group select { cursor: pointer; }
+    .filter-actions { display: flex; gap: .4rem; align-items: end; }
 
-    .btn { padding: .4rem .85rem; border: none; border-radius: 4px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .15s, transform .1s; line-height: 1.4; }
+    .btn { padding: .42rem .9rem; border: none; border-radius: 4px; font-size: .78rem; font-weight: 600; cursor: pointer; transition: background .15s, transform .1s; line-height: 1.4; white-space: nowrap; }
     .btn:active { transform: scale(.97); }
     .btn-primary { background: #0052cc; color: #fff; }
     .btn-primary:hover { background: #0043b3; }
     .btn-primary:disabled { background: #a5adba; cursor: not-allowed; }
-    .btn-success { background: #00875a; color: #fff; }
-    .btn-success:hover { background: #006644; }
-    .btn-success:disabled { background: #a5adba; cursor: default; }
-    .btn-apply { background: #0052cc; color: #fff; text-decoration: none; display: inline-flex; align-items: center; padding: .35rem .75rem; border-radius: 4px; font-size: .78rem; font-weight: 600; transition: background .15s; }
-    .btn-apply:hover { background: #0043b3; }
 
-    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: .35rem; }
+    .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: .3rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .status { font-size: .78rem; color: #6b778c; align-self: center; margin-left: auto; white-space: nowrap; }
+    .status-bar { display: flex; justify-content: space-between; align-items: center; padding: .4rem 0 0; max-width: 1400px; margin: 0 auto; }
+    .status { font-size: .75rem; color: #6b778c; }
     .status:empty { display: none; }
 
-    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; padding: 1.25rem 1.5rem; max-width: 1400px; margin: 0 auto; }
-
-    .card { background: #fff; border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid #dfe1e6; transition: box-shadow .2s, opacity .3s, border-color .2s; display: flex; flex-direction: column; gap: .5rem; }
+    /* ── cards ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; padding: 1rem 1.5rem; max-width: 1400px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 8px; padding: 1rem 1.15rem; border: 1px solid #dfe1e6; transition: box-shadow .2s, opacity .3s, border-color .2s; display: flex; flex-direction: column; gap: .45rem; }
     .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); border-color: #c1c7d0; }
     .card.applied { opacity: .4; }
-
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; }
-    .card-title { font-size: .92rem; font-weight: 600; line-height: 1.35; color: #172b4d; }
-    .card-company { font-size: .82rem; color: #6b778c; font-weight: 500; }
-    .card-meta { display: flex; gap: .6rem; font-size: .75rem; color: #97a0af; flex-wrap: wrap; align-items: center; }
+    .card-title { font-size: .88rem; font-weight: 600; line-height: 1.35; color: #172b4d; }
+    .card-company { font-size: .8rem; color: #6b778c; font-weight: 500; }
+    .card-meta { display: flex; gap: .5rem; font-size: .72rem; color: #97a0af; flex-wrap: wrap; align-items: center; }
     .card-meta .sep { width: 3px; height: 3px; border-radius: 50%; background: #dfe1e6; flex-shrink: 0; }
 
-    .badge { display: inline-flex; align-items: center; padding: .12rem .5rem; border-radius: 3px; font-size: .72rem; font-weight: 700; letter-spacing: .02em; white-space: nowrap; flex-shrink: 0; }
+    .badge { display: inline-flex; align-items: center; padding: .1rem .45rem; border-radius: 3px; font-size: .7rem; font-weight: 700; letter-spacing: .02em; white-space: nowrap; flex-shrink: 0; }
     .badge-high { background: #e3fcef; color: #006644; }
     .badge-mid  { background: #fffae6; color: #ff8b00; }
     .badge-low  { background: #f4f5f7; color: #6b778c; }
 
-    .card-actions { display: flex; gap: .4rem; margin-top: auto; padding-top: .6rem; border-top: 1px solid #f0f1f4; }
+    .card-actions { display: flex; gap: .4rem; margin-top: auto; padding-top: .5rem; border-top: 1px solid #f0f1f4; }
+    .btn-success { background: #00875a; color: #fff; }
+    .btn-success:hover { background: #006644; }
+    .btn-success:disabled { background: #a5adba; cursor: default; }
+    .btn-apply { background: #0052cc; color: #fff; text-decoration: none; display: inline-flex; align-items: center; padding: .35rem .7rem; border-radius: 4px; font-size: .76rem; font-weight: 600; transition: background .15s; }
+    .btn-apply:hover { background: #0043b3; }
 
     .card-skills { overflow: hidden; max-height: 0; transition: max-height .25s ease; }
     .card-skills.open { max-height: 200px; }
-    .skills-toggle { font-size: .7rem; color: #0052cc; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: .25rem; margin-top: .1rem; }
+    .skills-toggle { font-size: .68rem; color: #0052cc; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: .25rem; }
     .skills-toggle:hover { text-decoration: underline; }
-    .skills-toggle .arrow { transition: transform .2s; font-size: .6rem; }
+    .skills-toggle .arrow { transition: transform .2s; font-size: .55rem; }
     .skills-toggle.open .arrow { transform: rotate(90deg); }
-    .skill-tag { display: inline-block; padding: .1rem .45rem; background: #e9ecef; color: #495057; border-radius: 3px; font-size: .68rem; font-weight: 500; }
-    .card-skills .card-skills-inner { display: flex; flex-wrap: wrap; gap: .3rem; padding-top: .3rem; }
+    .skill-tag { display: inline-block; padding: .08rem .4rem; background: #e9ecef; color: #495057; border-radius: 3px; font-size: .65rem; font-weight: 500; }
+    .card-skills .card-skills-inner { display: flex; flex-wrap: wrap; gap: .25rem; padding-top: .25rem; }
 
     .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #97a0af; font-size: .95rem; }
 
-    /* ── shimmer skeleton ── */
-    .skeleton { background: #e9ecef; border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid #dfe1e6; display: flex; flex-direction: column; gap: .6rem; }
+    /* ── shimmer ── */
+    .skeleton { background: #fff; border-radius: 8px; padding: 1rem 1.15rem; border: 1px solid #dfe1e6; display: flex; flex-direction: column; gap: .5rem; }
     .shimmer { background: linear-gradient(90deg, #e9ecef 25%, #f0f1f4 50%, #e9ecef 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    .sh-title { height: 16px; width: 70%; }
-    .sh-company { height: 12px; width: 40%; }
-    .sh-meta { height: 10px; width: 55%; }
-    .sh-actions { height: 28px; width: 50%; margin-top: .5rem; border-top: 1px solid #f0f1f4; padding-top: .5rem; }
+    .sh-title { height: 15px; width: 70%; }
+    .sh-company { height: 11px; width: 35%; }
+    .sh-meta { height: 9px; width: 50%; }
+    .sh-actions { height: 26px; width: 45%; margin-top: .4rem; border-top: 1px solid #f0f1f4; padding-top: .4rem; }
 
     /* ── pagination ── */
-    .pagination { display: flex; justify-content: center; align-items: center; gap: .4rem; padding: 1.5rem; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; }
-    .page-btn { padding: .35rem .65rem; border: 1px solid #dfe1e6; border-radius: 4px; background: #fff; font-size: .78rem; font-weight: 500; cursor: pointer; transition: all .15s; color: #172b4d; min-width: 32px; text-align: center; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: .35rem; padding: 1.25rem; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; }
+    .page-btn { padding: .3rem .6rem; border: 1px solid #dfe1e6; border-radius: 4px; background: #fff; font-size: .76rem; font-weight: 500; cursor: pointer; transition: all .15s; color: #172b4d; min-width: 30px; text-align: center; }
     .page-btn:hover:not(:disabled):not(.active) { background: #f0f1f4; border-color: #c1c7d0; }
     .page-btn.active { background: #0052cc; color: #fff; border-color: #0052cc; }
     .page-btn:disabled { opacity: .4; cursor: not-allowed; }
-    .page-info { font-size: .78rem; color: #6b778c; margin: 0 .5rem; }
+    .page-info { font-size: .75rem; color: #6b778c; margin: 0 .4rem; }
 
-    @media (max-width: 768px) {
-      header { padding: .6rem 1rem; }
-      header h1 { font-size: 1rem; }
-      header .tagline { display: none; }
-      .toolbar { top: 40px; padding: .6rem 1rem; gap: .5rem; }
-      .toolbar input[type=text] { width: 100%; }
-      .toolbar label { flex: 1 1 120px; min-width: 0; }
-      .toolbar input[type=range] { width: 100%; }
-      .cards { grid-template-columns: 1fr; padding: 1rem; gap: .75rem; }
+    /* ── responsive ── */
+    @media (max-width: 900px) {
+      .filter-grid { grid-template-columns: 1fr 1fr; }
+      .filter-actions { grid-column: 1 / -1; justify-content: flex-end; }
     }
-    @media (min-width: 769px) and (max-width: 1024px) {
-      .cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    @media (max-width: 600px) {
+      header { padding: .55rem 1rem; }
+      header h1 { font-size: .95rem; }
+      header .tagline { display: none; }
+      .filter-bar { top: 38px; padding: .5rem 1rem; }
+      .filter-grid { grid-template-columns: 1fr; gap: .45rem; }
+      .filter-actions { justify-content: stretch; }
+      .filter-actions .btn { flex: 1; }
+      .cards { grid-template-columns: 1fr; padding: .75rem; gap: .6rem; }
     }
   </style>
 </head>
@@ -103,36 +108,42 @@
     <h1>Job Radar<span class="tagline">matching jobs, scored for you</span></h1>
   </header>
 
-  <div class="toolbar">
-    <label>
-      Min Score: <span id="scoreVal">0.00</span>
-      <input type="range" id="scoreSlider" min="0" max="1" step="0.05" value="0">
-    </label>
-    <label>
-      Source
-      <select id="sourceSelect"><option value="">All</option></select>
-    </label>
-    <label>
-      Search
-      <input type="text" id="searchInput" placeholder="title, company...">
-    </label>
-    <label>
-      Skills
-      <input type="text" id="skillsInput" placeholder="e.g. React, Python">
-    </label>
-    <label>
-      Fresh
-      <select id="freshSelect">
-        <option value="">All time</option>
-        <option value="1">Last 24h</option>
-        <option value="3">Last 3 days</option>
-        <option value="7" selected>Last 7 days</option>
-        <option value="14">Last 14 days</option>
-        <option value="30">Last 30 days</option>
-      </select>
-    </label>
-    <button class="btn btn-primary" id="refreshBtn">Refresh Jobs</button>
-    <span class="status" id="status"></span>
+  <div class="filter-bar">
+    <div class="filter-grid">
+      <div class="filter-group">
+        <label>Search</label>
+        <input type="text" id="searchInput" placeholder="title, company...">
+      </div>
+      <div class="filter-group">
+        <label>Skills</label>
+        <input type="text" id="skillsInput" placeholder="e.g. React, Python">
+      </div>
+      <div class="filter-group">
+        <label>Source</label>
+        <select id="sourceSelect"><option value="">All sources</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Freshness</label>
+        <select id="freshSelect">
+          <option value="">All time</option>
+          <option value="1">Last 24 hours</option>
+          <option value="3">Last 3 days</option>
+          <option value="7" selected>Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30">Last 30 days</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Min Score: <span id="scoreVal">0.00</span></label>
+        <input type="range" id="scoreSlider" min="0" max="1" step="0.05" value="0">
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary" id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span class="status" id="status"></span>
+    </div>
   </div>
 
   <div class="cards" id="cards"></div>
@@ -164,7 +175,7 @@
     function timeAgo(dateStr) {
       if (!dateStr) return '';
       const ts = new Date(dateStr).getTime();
-      if (isNaN(ts) || ts < 946684800000) return ''; // before year 2000 = bad date
+      if (isNaN(ts) || ts < 946684800000) return '';
       const diff = Date.now() - ts;
       const mins = Math.floor(diff / 60000);
       if (mins < 1) return 'just now';
@@ -216,15 +227,13 @@
           <div class="shimmer sh-title"></div>
           <div class="shimmer sh-company"></div>
           <div class="shimmer sh-meta"></div>
-          <div class="sh-actions"><div class="shimmer" style="height:100%;width:40%;border-radius:4px"></div></div>
+          <div class="sh-actions"><div class="shimmer" style="height:100%;width:35%;border-radius:4px"></div></div>
         </div>`).join('');
     }
 
     function renderPagination(page, pages) {
       if (pages <= 1) { pagination.innerHTML = ''; return; }
-
       let html = `<button class="page-btn" ${page <= 1 ? 'disabled' : ''} onclick="goPage(${page - 1})">&laquo;</button>`;
-
       const range = [];
       const delta = 2;
       for (let i = Math.max(1, page - delta); i <= Math.min(pages, page + delta); i++) range.push(i);
@@ -233,12 +242,10 @@
         if (range[range.length - 1] < pages - 1) range.push('...');
         range.push(pages);
       }
-
       for (const p of range) {
         if (p === '...') html += `<span class="page-info">...</span>`;
         else html += `<button class="page-btn ${p === page ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
       }
-
       html += `<button class="page-btn" ${page >= pages ? 'disabled' : ''} onclick="goPage(${page + 1})">&raquo;</button>`;
       pagination.innerHTML = html;
     }
@@ -246,8 +253,7 @@
     window.goPage = function(p) { currentPage = p; loadJobs(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
     window.toggleSkills = function(uid, el) {
-      const box = document.getElementById('skills-' + uid);
-      box.classList.toggle('open');
+      document.getElementById('skills-' + uid).classList.toggle('open');
       el.classList.toggle('open');
     };
 
@@ -260,7 +266,6 @@
     async function loadJobs() {
       cards.innerHTML = renderSkeletons(PER_PAGE);
       pagination.innerHTML = '';
-
       const params = new URLSearchParams();
       const minScore = parseFloat(scoreSlider.value);
       if (minScore > 0) params.set('minScore', minScore);
@@ -270,16 +275,13 @@
       if (freshSelect.value) params.set('days', freshSelect.value);
       params.set('page', currentPage);
       params.set('limit', PER_PAGE);
-
       const res = await fetch('/api/jobs?' + params);
       const data = await res.json();
-
       cards.innerHTML = data.jobs.length
         ? data.jobs.map(renderCard).join('')
         : '<div class="empty">No jobs match your filters.</div>';
-
       renderPagination(data.page, data.pages);
-      status.textContent = data.total > 0 ? `${data.total} jobs total` : '';
+      status.textContent = data.total > 0 ? `${data.total} jobs` : '';
     }
 
     function resetPage() { currentPage = 1; }
@@ -288,7 +290,7 @@
       const res = await fetch('/api/sources');
       const sources = await res.json();
       const current = sourceSelect.value;
-      sourceSelect.innerHTML = '<option value="">All</option>';
+      sourceSelect.innerHTML = '<option value="">All sources</option>';
       for (const s of sources) {
         const opt = document.createElement('option');
         opt.value = s;
@@ -301,8 +303,7 @@
     window.markApplied = async function(id) {
       const card = document.querySelector(`.card[data-id="${id}"]`);
       const btn = card.querySelector('.btn-success');
-      btn.disabled = true;
-      btn.textContent = '...';
+      btn.disabled = true; btn.textContent = '...';
       const res = await fetch(`/api/jobs/${id}/applied`, { method: 'POST' });
       if (res.ok) { card.classList.add('applied'); btn.textContent = 'Applied'; }
       else { btn.disabled = false; btn.textContent = 'Mark Applied'; }
@@ -318,7 +319,7 @@
         status.textContent = `Done — ${data.added} new job${data.added !== 1 ? 's' : ''} found.`;
         resetPage(); await loadJobs();
       } catch (err) { status.textContent = 'Refresh failed: ' + err.message; }
-      finally { refreshBtn.disabled = false; refreshBtn.textContent = 'Refresh Jobs'; }
+      finally { refreshBtn.disabled = false; refreshBtn.textContent = 'Refresh'; }
     });
 
     scoreSlider.addEventListener('input', () => {

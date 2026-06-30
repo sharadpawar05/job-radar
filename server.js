@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cron from 'node-cron';
 import express from 'express';
+import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { initDb } from './storage/index.js';
@@ -87,9 +88,16 @@ app.get('/api/jobs', (req, res) => {
   });
 });
 
-app.get('/api/sources', (req, res) => {
-  const rows = db.prepare('SELECT DISTINCT source FROM jobs ORDER BY source').all();
-  res.json(rows.map(r => r.source));
+app.get('/api/sources', async (req, res) => {
+  const raw = await readFile('./config.json', 'utf8');
+  const config = JSON.parse(raw);
+  const configured = new Set([
+    'greenhouse', 'lever', 'arbeitnow', 'remotive', 'remoteok', 'hackernews',
+    'cutshort', 'indeed', 'adzuna', 'findwork', 'jooble', 'naukri'
+  ]);
+  const dbSources = db.prepare('SELECT DISTINCT source FROM jobs').all().map(r => r.source);
+  const all = [...new Set([...configured, ...dbSources])].sort();
+  res.json(all);
 });
 
 app.post('/api/jobs/:id/applied', (req, res) => {

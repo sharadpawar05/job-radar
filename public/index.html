@@ -59,8 +59,14 @@
 
     .card-actions { display: flex; gap: .4rem; margin-top: auto; padding-top: .6rem; border-top: 1px solid #f0f1f4; }
 
-    .card-skills { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .card-skills { overflow: hidden; max-height: 0; transition: max-height .25s ease; }
+    .card-skills.open { max-height: 200px; }
+    .skills-toggle { font-size: .7rem; color: #0052cc; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: .25rem; margin-top: .1rem; }
+    .skills-toggle:hover { text-decoration: underline; }
+    .skills-toggle .arrow { transition: transform .2s; font-size: .6rem; }
+    .skills-toggle.open .arrow { transform: rotate(90deg); }
     .skill-tag { display: inline-block; padding: .1rem .45rem; background: #e9ecef; color: #495057; border-radius: 3px; font-size: .68rem; font-weight: 500; }
+    .card-skills .card-skills-inner { display: flex; flex-wrap: wrap; gap: .3rem; padding-top: .3rem; }
 
     .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #97a0af; font-size: .95rem; }
 
@@ -107,6 +113,17 @@
       Skills
       <input type="text" id="skillsInput" placeholder="e.g. React, Python">
     </label>
+    <label>
+      Fresh
+      <select id="freshSelect">
+        <option value="">All time</option>
+        <option value="1">Last 24h</option>
+        <option value="3">Last 3 days</option>
+        <option value="7" selected>Last 7 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="30">Last 30 days</option>
+      </select>
+    </label>
     <button class="btn btn-primary" id="refreshBtn">Refresh Jobs</button>
     <span class="status" id="status"></span>
   </div>
@@ -121,6 +138,7 @@
     const sourceSelect = $('#sourceSelect');
     const searchInput = $('#searchInput');
     const skillsInput = $('#skillsInput');
+    const freshSelect = $('#freshSelect');
     const refreshBtn = $('#refreshBtn');
     const status = $('#status');
 
@@ -136,8 +154,10 @@
       const applied = !!job.appliedAt;
       let skills = [];
       try { skills = JSON.parse(job.skillsTags || '[]'); } catch {}
-      const skillTags = skills.length
-        ? `<div class="card-skills">${skills.map(s => `<span class="skill-tag">${esc(s)}</span>`).join('')}</div>`
+      const uid = job.id.slice(0, 8);
+      const skillSection = skills.length
+        ? `<span class="skills-toggle" onclick="toggleSkills('${uid}',this)"><span class="arrow">&#9654;</span> ${skills.length} skill${skills.length > 1 ? 's' : ''}</span>
+           <div class="card-skills" id="skills-${uid}"><div class="card-skills-inner">${skills.map(s => `<span class="skill-tag">${esc(s)}</span>`).join('')}</div></div>`
         : '';
       return `
         <div class="card${applied ? ' applied' : ''}" data-id="${job.id}">
@@ -150,7 +170,7 @@
             <span>${esc(job.location || 'Remote')}</span>
             <span>${esc(job.source)}</span>
           </div>
-          ${skillTags}
+          ${skillSection}
           <div class="card-actions">
             <a class="btn-apply" href="${esc(job.url)}" target="_blank" rel="noopener">Apply</a>
             ${applied
@@ -160,6 +180,12 @@
           </div>
         </div>`;
     }
+
+    window.toggleSkills = function(uid, el) {
+      const box = document.getElementById('skills-' + uid);
+      box.classList.toggle('open');
+      el.classList.toggle('open');
+    };
 
     function esc(str) {
       const d = document.createElement('div');
@@ -174,6 +200,7 @@
       if (sourceSelect.value) params.set('source', sourceSelect.value);
       if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
       if (skillsInput.value.trim()) params.set('skills', skillsInput.value.trim());
+      if (freshSelect.value) params.set('days', freshSelect.value);
 
       const res = await fetch('/api/jobs?' + params);
       const jobs = await res.json();
@@ -251,6 +278,8 @@
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(loadJobs, 300);
     });
+
+    freshSelect.addEventListener('change', loadJobs);
 
     loadJobs();
   </script>

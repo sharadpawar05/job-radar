@@ -18,9 +18,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/jobs', (req, res) => {
-  const { minScore, source, search, skills } = req.query;
+  const { minScore, source, search, skills, days } = req.query;
   let sql = 'SELECT * FROM jobs WHERE 1=1';
   const params = [];
+
+  if (days) {
+    sql += ' AND seenAt >= datetime(\'now\', ?)';
+    params.push(`-${Number(days)} days`);
+  }
 
   if (minScore != null) {
     sql += ' AND score >= ?';

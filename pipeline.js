@@ -6,6 +6,7 @@ import { fetchArbeitnowJobs } from './adapters/arbeitnow.js';
 import { fetchRemotiveJobs } from './adapters/remotive.js';
 import { fetchRemoteokJobs } from './adapters/remoteok.js';
 import { fetchHackernewsJobs } from './adapters/hackernews.js';
+import { fetchLinkedinJobs } from './adapters/linkedin.js';
 import { scoreJob } from './matcher/index.js';
 import { sendTelegramDigest } from './notifier/index.js';
 
@@ -29,7 +30,8 @@ export async function run() {
       fetchArbeitnowJobs(config.arbeitnow),
       ...config.remotive.map(cat => fetchRemotiveJobs(cat)),
       ...config.remoteok.map(tag => fetchRemoteokJobs(tag)),
-      fetchHackernewsJobs(config.hackernewsLimit || 50)
+      fetchHackernewsJobs(config.hackernewsLimit || 50),
+      ...config.linkedin.map(q => fetchLinkedinJobs(q.query, q.location))
     ];
 
     const results = await Promise.allSettled(fetches);

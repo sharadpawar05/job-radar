@@ -5,6 +5,12 @@
   "remotive": ["software-dev", "devops", "data", "design", "product"],
   "remoteok": ["python", "javascript", "react", "node", "remote", "india"],
   "hackernewsLimit": 50,
+  "linkedin": [
+    { "query": "javascript developer", "location": "India" },
+    { "query": "react developer", "location": "India" },
+    { "query": "node.js developer", "location": "India" },
+    { "query": "full stack developer", "location": "India" }
+  ],
   "skills": ["JavaScript", "Node.js", "React", "Python", "TypeScript", "Go", "Rust", "Java", "SQL", "AWS", "Docker", "Kubernetes"],
   "threshold": 0.3
 }

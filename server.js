@@ -92,8 +92,7 @@ app.get('/api/sources', async (req, res) => {
   const raw = await readFile('./config.json', 'utf8');
   const config = JSON.parse(raw);
   const configured = new Set([
-    'greenhouse', 'lever', 'arbeitnow', 'remotive', 'remoteok', 'hackernews',
-    'cutshort', 'indeed', 'adzuna', 'findwork', 'jooble', 'naukri'
+    'greenhouse', 'lever', 'arbeitnow', 'remotive', 'remoteok', 'hackernews', 'linkedin'
   ]);
   const dbSources = db.prepare('SELECT DISTINCT source FROM jobs').all().map(r => r.source);
   const all = [...new Set([...configured, ...dbSources])].sort();

@@ -29,12 +29,16 @@ app.get('/api/jobs', (req, res) => {
   const countParams = [];
 
   if (days) {
-    const clause = ' AND seenAt >= datetime(\'now\', ?)';
+    const clause = ` AND (
+      (postedDate > '2000-01-01' AND postedDate >= datetime('now', ?))
+      OR
+      (postedDate IS NULL OR postedDate <= '2000-01-01') AND seenAt >= datetime('now', ?)
+    )`;
     where += clause;
     countSql += clause;
     const val = `-${Number(days)} days`;
-    params.push(val);
-    countParams.push(val);
+    params.push(val, val);
+    countParams.push(val, val);
   }
 
   if (minScore != null) {

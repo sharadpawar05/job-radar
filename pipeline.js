@@ -4,8 +4,6 @@ import { fetchGreenhouseJobs } from './adapters/greenhouse.js';
 import { fetchLeverJobs } from './adapters/lever.js';
 import { fetchArbeitnowJobs } from './adapters/arbeitnow.js';
 import { fetchRemotiveJobs } from './adapters/remotive.js';
-import { fetchAdzunaJobs } from './adapters/adzuna.js';
-import { fetchFindworkJobs } from './adapters/findwork.js';
 import { fetchRemoteokJobs } from './adapters/remoteok.js';
 import { fetchHackernewsJobs } from './adapters/hackernews.js';
 import { scoreJob } from './matcher/index.js';
@@ -30,8 +28,6 @@ export async function run() {
       ...config.lever.map(slug => fetchLeverJobs(slug)),
       fetchArbeitnowJobs(config.arbeitnow),
       ...config.remotive.map(cat => fetchRemotiveJobs(cat)),
-      ...config.adzuna.map(q => fetchAdzunaJobs('us', q)),
-      fetchFindworkJobs(config.findwork),
       ...config.remoteok.map(tag => fetchRemoteokJobs(tag)),
       fetchHackernewsJobs(config.hackernewsLimit || 50)
     ];

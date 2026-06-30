@@ -1,11 +1,9 @@
 {
   "greenhouse": ["gitlab", "discord", "figma", "airbnb", "spotify", "stripe", "shopify", "cloudflare", "notion", "vercel"],
   "lever": ["netflix", "upstart", "square", "figma", "nuro", "liveramp"],
-  "arbeitnow": ["python", "remote", "javascript", "react", "node"],
+  "arbeitnow": ["python", "remote", "javascript", "react", "node", "india", "bangalore", "mumbai"],
   "remotive": ["software-dev", "devops", "data", "design", "product"],
-  "adzuna": ["javascript developer", "python developer", "react developer"],
-  "findwork": ["javascript", "python", "react", "node"],
-  "remoteok": ["python", "javascript", "react", "node", "remote"],
+  "remoteok": ["python", "javascript", "react", "node", "remote", "india"],
   "hackernewsLimit": 50,
   "skills": ["JavaScript", "Node.js", "React", "Python", "TypeScript", "Go", "Rust", "Java", "SQL", "AWS", "Docker", "Kubernetes"],
   "threshold": 0.3

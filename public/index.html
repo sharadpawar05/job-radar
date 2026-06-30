@@ -8,7 +8,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f4f5f7; color: #172b4d; min-height: 100vh; }
 
-    /* ── sticky header + filter bar ── */
     header { background: #0c1e3c; color: #fff; padding: .75rem 1.5rem; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
     header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; }
     header .tagline { font-size: .75rem; color: rgba(255,255,255,.5); margin-left: .5rem; font-weight: 400; }
@@ -20,7 +19,6 @@
     .toolbar select:focus, .toolbar input[type=text]:focus { outline: none; border-color: #0052cc; box-shadow: 0 0 0 2px rgba(0,82,204,.15); }
     .toolbar input[type=text] { width: 200px; }
 
-    /* ── buttons ── */
     .btn { padding: .4rem .85rem; border: none; border-radius: 4px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .15s, transform .1s; line-height: 1.4; }
     .btn:active { transform: scale(.97); }
     .btn-primary { background: #0052cc; color: #fff; }
@@ -38,7 +36,6 @@
     .status { font-size: .78rem; color: #6b778c; align-self: center; margin-left: auto; white-space: nowrap; }
     .status:empty { display: none; }
 
-    /* ── card grid ── */
     .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; padding: 1.25rem 1.5rem; max-width: 1400px; margin: 0 auto; }
 
     .card { background: #fff; border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid #dfe1e6; transition: box-shadow .2s, opacity .3s, border-color .2s; display: flex; flex-direction: column; gap: .5rem; }
@@ -51,7 +48,6 @@
     .card-meta { display: flex; gap: .6rem; font-size: .75rem; color: #97a0af; flex-wrap: wrap; align-items: center; }
     .card-meta .sep { width: 3px; height: 3px; border-radius: 50%; background: #dfe1e6; flex-shrink: 0; }
 
-    /* ── score badges ── */
     .badge { display: inline-flex; align-items: center; padding: .12rem .5rem; border-radius: 3px; font-size: .72rem; font-weight: 700; letter-spacing: .02em; white-space: nowrap; flex-shrink: 0; }
     .badge-high { background: #e3fcef; color: #006644; }
     .badge-mid  { background: #fffae6; color: #ff8b00; }
@@ -70,20 +66,33 @@
 
     .empty { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #97a0af; font-size: .95rem; }
 
-    /* ── responsive ── */
+    /* ── shimmer skeleton ── */
+    .skeleton { background: #e9ecef; border-radius: 8px; padding: 1.1rem 1.25rem; border: 1px solid #dfe1e6; display: flex; flex-direction: column; gap: .6rem; }
+    .shimmer { background: linear-gradient(90deg, #e9ecef 25%, #f0f1f4 50%, #e9ecef 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .sh-title { height: 16px; width: 70%; }
+    .sh-company { height: 12px; width: 40%; }
+    .sh-meta { height: 10px; width: 55%; }
+    .sh-actions { height: 28px; width: 50%; margin-top: .5rem; border-top: 1px solid #f0f1f4; padding-top: .5rem; }
+
+    /* ── pagination ── */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: .4rem; padding: 1.5rem; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; }
+    .page-btn { padding: .35rem .65rem; border: 1px solid #dfe1e6; border-radius: 4px; background: #fff; font-size: .78rem; font-weight: 500; cursor: pointer; transition: all .15s; color: #172b4d; min-width: 32px; text-align: center; }
+    .page-btn:hover:not(:disabled):not(.active) { background: #f0f1f4; border-color: #c1c7d0; }
+    .page-btn.active { background: #0052cc; color: #fff; border-color: #0052cc; }
+    .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .page-info { font-size: .78rem; color: #6b778c; margin: 0 .5rem; }
+
     @media (max-width: 768px) {
       header { padding: .6rem 1rem; }
       header h1 { font-size: 1rem; }
       header .tagline { display: none; }
-
       .toolbar { top: 40px; padding: .6rem 1rem; gap: .5rem; }
       .toolbar input[type=text] { width: 100%; }
       .toolbar label { flex: 1 1 120px; min-width: 0; }
       .toolbar input[type=range] { width: 100%; }
-
       .cards { grid-template-columns: 1fr; padding: 1rem; gap: .75rem; }
     }
-
     @media (min-width: 769px) and (max-width: 1024px) {
       .cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     }
@@ -101,9 +110,7 @@
     </label>
     <label>
       Source
-      <select id="sourceSelect">
-        <option value="">All</option>
-      </select>
+      <select id="sourceSelect"><option value="">All</option></select>
     </label>
     <label>
       Search
@@ -129,10 +136,12 @@
   </div>
 
   <div class="cards" id="cards"></div>
+  <div class="pagination" id="pagination"></div>
 
   <script>
     const $ = s => document.querySelector(s);
     const cards = $('#cards');
+    const pagination = $('#pagination');
     const scoreSlider = $('#scoreSlider');
     const scoreVal = $('#scoreVal');
     const sourceSelect = $('#sourceSelect');
@@ -143,11 +152,24 @@
     const status = $('#status');
 
     let debounceTimer;
+    let currentPage = 1;
+    const PER_PAGE = 20;
 
     function badgeClass(score) {
       if (score >= 0.6) return 'badge-high';
       if (score >= 0.3) return 'badge-mid';
       return 'badge-low';
+    }
+
+    function timeAgo(dateStr) {
+      if (!dateStr) return '';
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 60) return mins + 'm ago';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      const days = Math.floor(hrs / 24);
+      return days + 'd ago';
     }
 
     function renderCard(job) {
@@ -159,6 +181,7 @@
         ? `<span class="skills-toggle" onclick="toggleSkills('${uid}',this)"><span class="arrow">&#9654;</span> ${skills.length} skill${skills.length > 1 ? 's' : ''}</span>
            <div class="card-skills" id="skills-${uid}"><div class="card-skills-inner">${skills.map(s => `<span class="skill-tag">${esc(s)}</span>`).join('')}</div></div>`
         : '';
+      const posted = timeAgo(job.postedDate || job.seenAt);
       return `
         <div class="card${applied ? ' applied' : ''}" data-id="${job.id}">
           <div class="card-header">
@@ -168,7 +191,9 @@
           <div class="card-company">${esc(job.company)}</div>
           <div class="card-meta">
             <span>${esc(job.location || 'Remote')}</span>
+            <span class="sep"></span>
             <span>${esc(job.source)}</span>
+            ${posted ? `<span class="sep"></span><span>${posted}</span>` : ''}
           </div>
           ${skillSection}
           <div class="card-actions">
@@ -180,6 +205,41 @@
           </div>
         </div>`;
     }
+
+    function renderSkeletons(count) {
+      return Array(count).fill('').map(() => `
+        <div class="skeleton">
+          <div class="shimmer sh-title"></div>
+          <div class="shimmer sh-company"></div>
+          <div class="shimmer sh-meta"></div>
+          <div class="sh-actions"><div class="shimmer" style="height:100%;width:40%;border-radius:4px"></div></div>
+        </div>`).join('');
+    }
+
+    function renderPagination(page, pages) {
+      if (pages <= 1) { pagination.innerHTML = ''; return; }
+
+      let html = `<button class="page-btn" ${page <= 1 ? 'disabled' : ''} onclick="goPage(${page - 1})">&laquo;</button>`;
+
+      const range = [];
+      const delta = 2;
+      for (let i = Math.max(1, page - delta); i <= Math.min(pages, page + delta); i++) range.push(i);
+      if (range[0] > 1) { range.unshift(1); if (range[1] > 2) range.splice(1, 0, '...'); }
+      if (range[range.length - 1] < pages) {
+        if (range[range.length - 1] < pages - 1) range.push('...');
+        range.push(pages);
+      }
+
+      for (const p of range) {
+        if (p === '...') html += `<span class="page-info">...</span>`;
+        else html += `<button class="page-btn ${p === page ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
+      }
+
+      html += `<button class="page-btn" ${page >= pages ? 'disabled' : ''} onclick="goPage(${page + 1})">&raquo;</button>`;
+      pagination.innerHTML = html;
+    }
+
+    window.goPage = function(p) { currentPage = p; loadJobs(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
     window.toggleSkills = function(uid, el) {
       const box = document.getElementById('skills-' + uid);
@@ -194,6 +254,9 @@
     }
 
     async function loadJobs() {
+      cards.innerHTML = renderSkeletons(PER_PAGE);
+      pagination.innerHTML = '';
+
       const params = new URLSearchParams();
       const minScore = parseFloat(scoreSlider.value);
       if (minScore > 0) params.set('minScore', minScore);
@@ -201,85 +264,64 @@
       if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
       if (skillsInput.value.trim()) params.set('skills', skillsInput.value.trim());
       if (freshSelect.value) params.set('days', freshSelect.value);
+      params.set('page', currentPage);
+      params.set('limit', PER_PAGE);
 
       const res = await fetch('/api/jobs?' + params);
-      const jobs = await res.json();
+      const data = await res.json();
 
-      cards.innerHTML = jobs.length
-        ? jobs.map(renderCard).join('')
+      cards.innerHTML = data.jobs.length
+        ? data.jobs.map(renderCard).join('')
         : '<div class="empty">No jobs match your filters.</div>';
 
-      populateSources(jobs);
+      renderPagination(data.page, data.pages);
+      status.textContent = data.total > 0 ? `${data.total} jobs total` : '';
     }
 
-    function populateSources(jobs) {
-      const current = sourceSelect.value;
-      const sources = [...new Set(jobs.map(j => j.source))].sort();
-      const existing = new Set([...sourceSelect.options].map(o => o.value));
-      for (const s of sources) {
-        if (!existing.has(s)) {
-          const opt = document.createElement('option');
-          opt.value = s;
-          opt.textContent = s;
-          sourceSelect.appendChild(opt);
-        }
-      }
-      sourceSelect.value = current;
-    }
+    function resetPage() { currentPage = 1; }
 
     window.markApplied = async function(id) {
       const card = document.querySelector(`.card[data-id="${id}"]`);
       const btn = card.querySelector('.btn-success');
       btn.disabled = true;
       btn.textContent = '...';
-
       const res = await fetch(`/api/jobs/${id}/applied`, { method: 'POST' });
-      if (res.ok) {
-        card.classList.add('applied');
-        btn.textContent = 'Applied';
-      } else {
-        btn.disabled = false;
-        btn.textContent = 'Mark Applied';
-      }
+      if (res.ok) { card.classList.add('applied'); btn.textContent = 'Applied'; }
+      else { btn.disabled = false; btn.textContent = 'Mark Applied'; }
     };
 
     refreshBtn.addEventListener('click', async () => {
       refreshBtn.disabled = true;
       refreshBtn.innerHTML = '<span class="spinner"></span>Refreshing...';
       status.textContent = 'Fetching new jobs...';
-
       try {
         const res = await fetch('/api/refresh', { method: 'POST' });
         const data = await res.json();
         status.textContent = `Done — ${data.added} new job${data.added !== 1 ? 's' : ''} found.`;
-        await loadJobs();
-      } catch (err) {
-        status.textContent = 'Refresh failed: ' + err.message;
-      } finally {
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = 'Refresh Jobs';
-      }
+        resetPage(); await loadJobs();
+      } catch (err) { status.textContent = 'Refresh failed: ' + err.message; }
+      finally { refreshBtn.disabled = false; refreshBtn.textContent = 'Refresh Jobs'; }
     });
 
     scoreSlider.addEventListener('input', () => {
       scoreVal.textContent = parseFloat(scoreSlider.value).toFixed(2);
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(loadJobs, 300);
+      debounceTimer = setTimeout(() => { resetPage(); loadJobs(); }, 300);
     });
 
-    sourceSelect.addEventListener('change', loadJobs);
+    sourceSelect.addEventListener('change', () => { resetPage(); loadJobs(); });
 
     searchInput.addEventListener('input', () => {
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(loadJobs, 300);
+      debounceTimer = setTimeout(() => { resetPage(); loadJobs(); }, 300);
     });
 
     skillsInput.addEventListener('input', () => {
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(loadJobs, 300);
+      debounceTimer = setTimeout(() => { resetPage(); loadJobs(); }, 300);
     });
 
-    freshSelect.addEventListener('change', loadJobs);
+    freshSelect.addEventListener('change', () => { resetPage(); loadJobs(); });
 
     loadJobs();
   </script>

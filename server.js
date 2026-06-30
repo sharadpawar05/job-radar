@@ -18,40 +18,69 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/jobs', (req, res) => {
-  const { minScore, source, search, skills, days } = req.query;
-  let sql = 'SELECT * FROM jobs WHERE 1=1';
+  const { minScore, source, search, skills, days, page = '1', limit = '20' } = req.query;
+  const pageNum = Math.max(1, Number(page));
+  const limitNum = Math.min(100, Math.max(1, Number(limit)));
+  const offset = (pageNum - 1) * limitNum;
+
+  let where = 'SELECT * FROM jobs WHERE 1=1';
+  let countSql = 'SELECT COUNT(*) as total FROM jobs WHERE 1=1';
   const params = [];
+  const countParams = [];
 
   if (days) {
-    sql += ' AND seenAt >= datetime(\'now\', ?)';
-    params.push(`-${Number(days)} days`);
+    const clause = ' AND seenAt >= datetime(\'now\', ?)';
+    where += clause;
+    countSql += clause;
+    const val = `-${Number(days)} days`;
+    params.push(val);
+    countParams.push(val);
   }
 
   if (minScore != null) {
-    sql += ' AND score >= ?';
-    params.push(Number(minScore));
+    const clause = ' AND score >= ?';
+    where += clause;
+    countSql += clause;
+    const val = Number(minScore);
+    params.push(val);
+    countParams.push(val);
   }
 
   if (source) {
-    sql += ' AND source = ?';
+    const clause = ' AND source = ?';
+    where += clause;
+    countSql += clause;
     params.push(source);
+    countParams.push(source);
   }
 
   if (search) {
-    sql += ' AND (title LIKE ? OR company LIKE ? OR description LIKE ?)';
+    const clause = ' AND (title LIKE ? OR company LIKE ? OR description LIKE ?)';
+    where += clause;
+    countSql += clause;
     const term = `%${search}%`;
     params.push(term, term, term);
+    countParams.push(term, term, term);
   }
 
   if (skills) {
-    sql += ' AND skillsTags LIKE ?';
-    params.push(`%${skills}%`);
+    const clause = ' AND skillsTags LIKE ?';
+    where += clause;
+    countSql += clause;
+    const val = `%${skills}%`;
+    params.push(val);
+    countParams.push(val);
   }
 
-  sql += ' ORDER BY score DESC';
+  const { total } = db.prepare(countSql).get(...countParams);
+  const jobs = db.prepare(where + ' ORDER BY score DESC LIMIT ? OFFSET ?').all(...params, limitNum, offset);
 
-  const jobs = db.prepare(sql).all(...params);
-  res.json(jobs);
+  res.json({
+    jobs,
+    total,
+    page: pageNum,
+    pages: Math.ceil(total / limitNum)
+  });
 });
 
 app.post('/api/jobs/:id/applied', (req, res) => {
